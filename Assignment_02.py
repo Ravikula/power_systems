@@ -72,7 +72,7 @@ def z_p(a,b):
 xp1 = pos_seq["xm"]+pos_seq["xtf3"]+pos_seq["xt"]
 xp2 = z_p(pos_seq["xtf12"]+pos_seq["xg"],pos_seq["xtf12"]+pos_seq["xg"])
 Z_th_pos = z_p(xp1, xp2)
-#print("Z_th_pos: "+str(abs(Z_th_pos)) + " (Magnitude)  " + str(math.degrees(cmath.phase(Z_th_pos)))+" (degrees)")
+
 print("Z_th_pos: "+str(round(abs(Z_th_pos),d)) + " (Magnitude)  " + str(math.degrees(cmath.phase(Z_th_pos)))+" (degrees)")
 
 
@@ -81,7 +81,7 @@ print("Z_th_pos: "+str(round(abs(Z_th_pos),d)) + " (Magnitude)  " + str(math.deg
 xn1 = neg_seq["xm"]+neg_seq["xtf3"]+neg_seq["xt"]
 xn2 = z_p(neg_seq["xtf12"]+neg_seq["xg"],neg_seq["xtf12"]+neg_seq["xg"])
 Z_th_neg = z_p(xn1, xn2)
-#print("Z_th_neg: "+str(abs(Z_th_neg)) + " (Magnitude)  " + str(math.degrees(cmath.phase(Z_th_neg)))+" (degrees)")
+
 print("Z_th_neg: "+str(round(abs(Z_th_neg),d)) + " (Magnitude)  " + str(math.degrees(cmath.phase(Z_th_neg)))+" (degrees)")
 
 
@@ -95,11 +95,85 @@ print("Z_th_zero: "+str(round(abs(Z_th_zero),d)) + " (Magnitude)  " + str(math.d
 # For balanced faults, only the positive sequance is considered.
 vf_pre = 1.02
 
-I0 = 0
-Ip = vf_pre/Z_th_pos
-In = 0
+I0_2 = 0
+Ip_2 = vf_pre/Z_th_pos
+In_2 = 0
 
-print("Ia: "+str(round(abs(Ia),4)) + " (Magnitude)  " + str(math.degrees(cmath.phase(Ia)))+" (degrees)")
+#Sequence currents
+I_seq_2 = np.array([[I0_2],
+                  [Ip_2],
+                  [In_2]])
+
+If_ph_2 = np.dot(T, I_seq_2)
+
+print("Ia = : " +str(np.abs(If_ph_2[0])) + "  " +str(np.angle(If_ph_2[0], deg=True)))
+print("Ib = : " +str(np.abs(If_ph_2[1])) + "  " +str(np.angle(If_ph_2[1], deg=True)))
+print("Ic = : " +str(np.abs(If_ph_2[2])) + "  " +str(np.angle(If_ph_2[2], deg=True)))
+
+from re import I
+#PART 3
+
+#Assume fault occur between phase A and Groung. Therefore, current flows only in phase A. Therefore, Ib=0 and Ic =0
+Ip_3 = vf_pre/(Z_th_pos+Z_th_neg+Z_th_zero)
+In_3 = Ip_3
+I0_3 = Ip_3
+
+I_seq_3 = np.array([[I0_3],
+                    [Ip_3],
+                    [In_3]])
+
+If_ph_3 = np.dot(T, I_seq_3)
+
+print("Ia = : " +str(np.abs(If_ph_3[0])) + "  " +str(np.angle(If_ph_3[0], deg=True)))
+print("Ib = : " +str(np.abs(If_ph_3[1])) + "  " +str(np.angle(If_ph_3[1], deg=True)))
+print("Ic = : " +str(np.abs(If_ph_3[2])) + "  " +str(np.angle(If_ph_3[2], deg=True)))
+
+Ia = Ip_3 + In_3 + I0_3
+Ib =0
+Ic =0
+
+print("Ia = : " +str(abs(Ia)) + "  " +str(np.angle(Ia, deg=True)))
+print("Ib = : " +str(abs(Ib)) + "  " +str(np.angle(Ib, deg=True)))
+print("Ic = : " +str(abs(Ic)) + "  " +str(np.angle(Ic, deg=True)))
+
+#PART 4
+
+Ip_4 = vf_pre/(Z_th_pos+Z_th_neg)
+
+In_4 = -Ip_4
+I0_4 = 0
+
+I_seq_4 = np.array([[I0_4],
+                    [Ip_4],
+                    [In_4]])
+
+If_ph_4 = np.dot(T, I_seq_4)
+
+print("Ia = : " +str(np.abs(If_ph_4[0])) + "  " +str(np.angle(If_ph_4[0], deg=True)))
+print("Ib = : " +str(np.abs(If_ph_4[1])) + "  " +str(np.angle(If_ph_4[1], deg=True)))
+print("Ic = : " +str(np.abs(If_ph_4[2])) + "  " +str(np.angle(If_ph_4[2], deg=True)))
+
+
+print(round(-2.27421069e-14, 4))
+
+#PART 5
+
+#Assume fault is between phase B and C and ground. Then VB = VC = 0, IA = 0 and IB+IC = IF, Vp = Vn = V0
+
+Ip_5 = vf_pre/(Z_th_pos + z_p(Z_th_neg,Z_th_zero))
+Vp = z_p(Z_th_neg,Z_th_zero)*Ip_4
+
+In_5 = -(Vp/Z_th_neg)
+I0_5 = -(Vp/Z_th_zero)
+
+I_seq_5 = np.array([[I0_5],
+                    [Ip_5],
+                    [In_5]])
+If_ph_5 = np.dot(T, I_seq_5)
+
+print("Ia = : " +str(np.abs(If_ph_5[0])) + "  " +str(np.angle(If_ph_5[0], deg=True)))
+print("Ib = : " +str(np.abs(If_ph_5[1])) + "  " +str(np.angle(If_ph_5[1], deg=True)))
+print("Ic = : " +str(np.abs(If_ph_5[2])) + "  " +str(np.angle(If_ph_5[2], deg=True)))
 
 A = np.array([[-17j, 5j, 2j],
               [5j, -14j, 4j],
@@ -119,6 +193,18 @@ V = np.dot(T_1, V_ph)/3
 
 print(np.abs(V))
 print(np.angle(V, deg=True))
+
+import numpy as np
+
+# Create a 2D NumPy array
+arr_2d = np.array([[1, 2, 3],
+                   [4, 5, 6],
+                   [7, 8, 9]])
+
+# Access elements in a 2D array
+element = arr_2d[1, 2]  # Access the element at row 1, column 2 (6)
+
+print("Element:", element)
 
 import numpy as np
 
