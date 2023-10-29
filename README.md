@@ -1,3 +1,3 @@
 # power_systems
 
-Power system Assignment 01 and 02 answers.
+Power systems balanced and unbalanced faults analysis.
